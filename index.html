@@ -1,0 +1,86 @@
+<div style="
+  display:inline-block;
+  padding:12px 18px;
+  border-radius:10px;
+  background:#0b0b0b;
+  color:#ffffff;
+  font-family:Arial, sans-serif;
+  text-align:center;
+  min-width:160px;
+">
+
+  <div style="font-size:14px;letter-spacing:1px;">
+    Moon Phase
+  </div>
+
+  <div id="moon-icon" style="
+    font-size:48px;
+    margin:8px 0;
+  ">
+    🌑
+  </div>
+
+  <div id="moon-text" style="
+    font-size:14px;
+    color:#cccccc;
+    margin-bottom:4px;
+  ">
+    ---
+  </div>
+
+  <div id="moon-percent" style="
+    font-size:13px;
+    color:#00e1ff;
+  ">
+    ---
+  </div>
+
+</div>
+
+<script>
+  // Lunar calculations
+  function getMoonData(date) {
+    const lunarCycle = 29.530588853; // days
+    const knownNewMoon = new Date("2001-01-24T13:44:00Z");
+    const diffDays = (date - knownNewMoon) / (1000 * 60 * 60 * 24);
+    const age = ((diffDays % lunarCycle) + lunarCycle) % lunarCycle;
+
+    // Illumination percentage
+    const illumination = Math.round(
+      (1 - Math.cos((2 * Math.PI * age) / lunarCycle)) * 50
+    );
+
+    // Phase index (0–7)
+    const phaseIndex = Math.floor((age / lunarCycle) * 8);
+
+    return { age, illumination, phaseIndex };
+  }
+
+  function updateMoonPhase() {
+    // IST time
+    const now = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+    );
+
+    const phases = [
+      { icon: "🌑", name: "New Moon" },
+      { icon: "🌒", name: "Waxing Crescent" },
+      { icon: "🌓", name: "First Quarter" },
+      { icon: "🌔", name: "Waxing Gibbous" },
+      { icon: "🌕", name: "Full Moon" },
+      { icon: "🌖", name: "Waning Gibbous" },
+      { icon: "🌗", name: "Last Quarter" },
+      { icon: "🌘", name: "Waning Crescent" }
+    ];
+
+    const data = getMoonData(now);
+    const phase = phases[data.phaseIndex];
+
+    document.getElementById("moon-icon").innerHTML = phase.icon;
+    document.getElementById("moon-text").innerHTML = phase.name;
+    document.getElementById("moon-percent").innerHTML =
+      "Visible: " + data.illumination + "%";
+  }
+
+  updateMoonPhase();
+</script>
